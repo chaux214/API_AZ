@@ -14,7 +14,6 @@ const paymentmethodRoutes = require('./routes/paymentmethodRoutes');
 const providersRoutes = require('./routes/providersRoutes');
 const shippingaddressesRoutes = require('./routes/shippingaddressesRoutes');
 
-// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
