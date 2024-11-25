@@ -14,13 +14,13 @@ exports.obtenerOrders = (req, res) => {
 
 
 exports.crearOrder = (req, res) => {
-    const { order_id, customer_id, tracking_id, date, total } = req.body;
+    const { customer_id, tracking_id, date, total } = req.body;
 
-    if (!order_id || !customer_id || !tracking_id || !date || !total) {
+    if (!customer_id || !tracking_id || !date || !total) {
         return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
     }
 
-    const nuevaOrder = { order_id, customer_id, tracking_id, date, total};
+    const nuevaOrder = { customer_id, tracking_id, date, total};
 
     const sql = 'INSERT INTO orders SET ?';
     db.query(sql, nuevaOrder, (err, resultado) => {
@@ -28,6 +28,45 @@ exports.crearOrder = (req, res) => {
             return res.status(500).json({ mensaje: 'Error al agregar la orden', error: err });
         }
         res.status(201).json({ mensaje: 'Orden agregada con éxito', order_id: resultado.insertId });
+    });
+};
+
+// Actualizar un producto
+exports.actualizarOrder = (req, res) => {
+    const { id } = req.params; 
+    const {date, total, } = req.body;
+
+    if (!date || !total) {
+        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios para actualizar' });
+    }
+
+    const sql = `UPDATE orders SET date = ?, total = ? WHERE order_id = ?`;
+
+    db.query(sql, [date, total,id], (err, resultado) => {
+        if (err) {
+            return res.status(500).json({ mensaje: 'Error al actualizar la orden', error: err });
+        }
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ mensaje: 'Orden no encontrada' });
+        }
+        res.json({ mensaje: 'Orden actualizado con éxito' });
+    });
+};
+
+// Eliminar un producto
+exports.eliminarOrder = (req, res) => {
+    const { id } = req.params;  // Obtener el id de la orden  a eliminar
+
+    const sql = `DELETE FROM orders WHERE order_id = ?`;
+
+    db.query(sql, [id], (err, resultado) => {
+        if (err) {
+            return res.status(500).json({ mensaje: 'Error al eliminar la orden', error: err });
+        }
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ mensaje: 'Orden no encontrada' });
+        }
+        res.json({ mensaje: 'Orden eliminada con éxito' });
     });
 };
 

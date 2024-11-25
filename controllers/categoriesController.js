@@ -14,13 +14,13 @@ exports.obtenerCategories = (req, res) => {
 
 
 exports.crearCategory = (req, res) => {
-    const { category_id, category_name, description, creation_date, update_date, status} = req.body;
+    const {category_name, description, creation_date, update_date, status} = req.body;
 
-    if (!category_id || !category_name || !description || !creation_date  || !update_date  || !status) {
+    if (!category_name || !description || !creation_date  || !update_date  || !status) {
         return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
     }
 
-    const nuevaCategory = { category_id, category_name, description, creation_date, update_date, status };
+    const nuevaCategory = { category_name, description, creation_date, update_date, status };
 
     const sql = 'INSERT INTO categories SET ?';
     db.query(sql, nuevaCategory, (err, resultado) => {
@@ -30,3 +30,44 @@ exports.crearCategory = (req, res) => {
         res.status(201).json({ mensaje: 'Categoría agregada con éxito', category_id: resultado.insertId });
     });
 };
+
+
+// Actualizar una categoria 
+exports.actualizarCategory = (req, res) => {
+    const { id } = req.params; 
+    const { category_name, description,creation_date, update_date, status } = req.body;
+
+    if (!category_name|| !description || !creation_date || !update_date || !status) {
+        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios para actualizar la categoria' });
+    }
+
+    const sql = `UPDATE categories SET category_name = ?, description = ?, creation_date = ?, update_date = ?, status = ? WHERE category_id = ?`;
+
+    db.query(sql, [category_name, description, creation_date, update_date, status, id], (err, resultado) => {
+        if (err) {
+            return res.status(500).json({ mensaje: 'Error al actualizar la categoria', error: err });
+        }
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ mensaje: 'Categoria no encontrada' });
+        }
+        res.json({ mensaje: 'Categoria actualizada con éxito' });
+    });
+};
+
+// Eliminar un producto
+exports.eliminarCategory = (req, res) => {
+    const { id } = req.params;  // Obtener el id del categoria a eliminar
+
+    const sql = `DELETE FROM categories WHERE category_id = ?`;
+
+    db.query(sql, [id], (err, resultado) => {
+        if (err) {
+            return res.status(500).json({ mensaje: 'Error al eliminar la categoria', error: err });
+        }
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ mensaje: 'Categoria no encontrada' });
+        }
+        res.json({ mensaje: 'Categoria eliminada con éxito' });
+    });
+};
+

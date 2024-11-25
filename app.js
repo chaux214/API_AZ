@@ -14,9 +14,27 @@ const paymentmethodRoutes = require('./routes/paymentmethodRoutes');
 const providersRoutes = require('./routes/providersRoutes');
 const shippingaddressesRoutes = require('./routes/shippingaddressesRoutes');
 
+const allowedOrigins = [
+    'http://localhost:4200',
+    'https://0s3dr1p5-10000.use.devtunnels.ms/',
+    
+];
+
+const corsOptions = {
+    origin : function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+    } else {
+        callback(new Error('No permitido'));
+    }
+},
+methods : ['GET, POST, PUT, DELETE', 'OPTIONS'],
+    allowedHeaders : ['Content-Type',  'Authorization']
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Ruta de prueba
 app.get('/ca', (req, res) => {
