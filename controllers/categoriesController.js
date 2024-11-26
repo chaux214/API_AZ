@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 
-exports.getCategories = (req, res) => {
+exports.getCategory = (req, res) => {
     const sql = 'SELECT * FROM categories';
     db.query(sql, (err, results) => {
         if (err) {
@@ -54,7 +54,7 @@ exports.putCategory = (req, res) => {
     });
 };
 
-// Eliminar un producto
+// Eliminar una categoria
 exports.deleteCategory = (req, res) => {
     const { id } = req.params;  // Obtener el id del categoria a eliminar
 

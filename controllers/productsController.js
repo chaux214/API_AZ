@@ -1,30 +1,31 @@
 const db = require('../config/db.js');
 
-
 exports.getProduct = (req, res) => {
-    const {category_id} = req.query; 
-    // if (!category_id) {
-    //     return res.status(400).json({ mensaje: 'El parametro category_id es requerido' });
-    // }
-    const sql = 'SELECT * FROM products ';
-    db.query(sql,  (err, results) => {
+    const { category_id } = req.query; // Obtenemos el parámetro de la consulta
+
+    // Si no se pasa `category_id`, seleccionamos todos los productos
+    const sql = category_id 
+        ? 'SELECT * FROM products p JOIN categories c ON p.category_id = c.category_id WHERE c.urlSlug = ?' 
+        : 'SELECT * FROM products';
+
+    const queryParams = category_id ? [category_id] : []; // Parámetros para la consulta
+
+    db.query(sql, queryParams, (err, results) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(500).json({ mensaje: 'Error en la consulta de la categoria', error: err });
+            return res.status(500).json({ mensaje: 'Error en la consulta a la base de datos', error: err });
         }
-        if(results.length == 0){
-            return res.status(404).json({ mensaje: 'No hay productos en esta categoría' });
+
+        if (results.length === 0) {
+            return res.status(404).json({ mensaje: category_id 
+                ? 'No hay productos en esta categoría' 
+                : 'No hay productos disponibles' });
         }
-    
-        db.query(sql, (err, results) => {
-            if (err) {
-                console.error('Error en la consulta:', err);
-                return res.status(500).json({ mensaje: 'Error en la consulta a la base de datos', error: err });
-            }
-            res.json(results);
-        });
-    })
+
+        res.json(results); // Devolvemos los resultados
+    });
 };
+
 exports.getByUrlSlug = (req, res) => {
     const urlSlug = req.params.urlSlug; // Extrae el parámetro de la URL
     const sql = 'SELECT * FROM products WHERE urlSlug = ?'; // Consulta para buscar por urlSlug
