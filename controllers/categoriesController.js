@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 
-exports.obtenerCategories = (req, res) => {
+exports.getCategories = (req, res) => {
     const sql = 'SELECT * FROM categories';
     db.query(sql, (err, results) => {
         if (err) {
@@ -13,7 +13,7 @@ exports.obtenerCategories = (req, res) => {
 };
 
 
-exports.crearCategory = (req, res) => {
+exports.postCategory = (req, res) => {
     const {category_name, description, creation_date, update_date, status} = req.body;
 
     if (!category_name || !description || !creation_date  || !update_date  || !status) {
@@ -33,7 +33,7 @@ exports.crearCategory = (req, res) => {
 
 
 // Actualizar una categoria 
-exports.actualizarCategory = (req, res) => {
+exports.putCategory = (req, res) => {
     const { id } = req.params; 
     const { category_name, description,creation_date, update_date, status } = req.body;
 
@@ -55,7 +55,7 @@ exports.actualizarCategory = (req, res) => {
 };
 
 // Eliminar un producto
-exports.eliminarCategory = (req, res) => {
+exports.deleteCategory = (req, res) => {
     const { id } = req.params;  // Obtener el id del categoria a eliminar
 
     const sql = `DELETE FROM categories WHERE category_id = ?`;

@@ -1,15 +1,29 @@
 const db = require('../config/db.js');
 
 
-exports.obtenerProduct = (req, res) => {
-    const sql = 'SELECT * FROM products';
-    db.query(sql, (err, results) => {
+exports.getProduct = (req, res) => {
+    const {category_id} = req.query; 
+    // if (!category_id) {
+    //     return res.status(400).json({ mensaje: 'El parametro category_id es requerido' });
+    // }
+    const sql = 'SELECT * FROM products ';
+    db.query(sql,  (err, results) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(500).json({ mensaje: 'Error en la consulta a la base de datos', error: err });
+            return res.status(500).json({ mensaje: 'Error en la consulta de la categoria', error: err });
         }
-        res.json(results);
-    });
+        if(results.length == 0){
+            return res.status(404).json({ mensaje: 'No hay productos en esta categoría' });
+        }
+    
+        db.query(sql, (err, results) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(500).json({ mensaje: 'Error en la consulta a la base de datos', error: err });
+            }
+            res.json(results);
+        });
+    })
 };
 exports.getByUrlSlug = (req, res) => {
     const urlSlug = req.params.urlSlug; // Extrae el parámetro de la URL
@@ -29,7 +43,7 @@ exports.getByUrlSlug = (req, res) => {
     });
 };
 
-exports.crearProduct = (req, res) => {
+exports.postProduct = (req, res) => {
     const { urlSlug,product_name, description, price, stock_quantity, category_id, creation_date, update_date, image_url, status } = req.body;
 
     if (!urlSlug || !product_name || !description || !price || !stock_quantity || !category_id || !creation_date || !update_date || !image_url || !status) {
@@ -48,7 +62,7 @@ exports.crearProduct = (req, res) => {
 };
 
 // Actualizar un producto
-exports.actualizarProduct = (req, res) => {
+exports.putProduct = (req, res) => {
     const { id } = req.params; 
     const {urlSlug, product_name, description, price, stock_quantity, update_date, image_url, status } = req.body;
 
@@ -70,7 +84,7 @@ exports.actualizarProduct = (req, res) => {
 };
 
 // Eliminar un producto
-exports.eliminarProduct = (req, res) => {
+exports.deleteProduct = (req, res) => {
     const { id } = req.params;  // Obtener el id del producto a eliminar
 
     const sql = `DELETE FROM products WHERE product_id = ?`;
