@@ -14,19 +14,20 @@ exports.getCategory = (req, res) => {
 
 
 exports.postCategory = (req, res) => {
-    const {category_name, description, creation_date, update_date, status} = req.body;
+    const {category_name, description, urlSlug, status} = req.body;
 
-    if (!category_name || !description || !creation_date  || !update_date  || !status) {
+    if (!category_name || !description || !urlSlug || !status) {
         return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
     }
 
-    const nuevaCategory = { category_name, description, creation_date, update_date, status };
+    const nuevaCategory = { category_name, description, creation_date : new Date(),  urlSlug, status };
 
     const sql = 'INSERT INTO categories SET ?';
     db.query(sql, nuevaCategory, (err, resultado) => {
         if (err) {
             return res.status(500).json({ mensaje: 'Error al agregar la categoría', error: err });
         }
+
         res.status(201).json({ mensaje: 'Categoría agregada con éxito', category_id: resultado.insertId });
     });
 };
@@ -35,15 +36,15 @@ exports.postCategory = (req, res) => {
 // Actualizar una categoria 
 exports.putCategory = (req, res) => {
     const { id } = req.params; 
-    const { category_name, description,creation_date, update_date, status } = req.body;
+    const { category_name, description,status, urlSlug} = req.body;
 
-    if (!category_name|| !description || !creation_date || !update_date || !status) {
+    if (!category_name|| !description || urlSlug|| !status) {
         return res.status(400).json({ mensaje: 'Todos los campos son obligatorios para actualizar la categoria' });
     }
+    const update_date = new Date(); 
+    const sql = `UPDATE categories SET category_name = ?, description = ?, update_date = ?, status = ? WHERE category_id = ?`;
 
-    const sql = `UPDATE categories SET category_name = ?, description = ?, creation_date = ?, update_date = ?, status = ? WHERE category_id = ?`;
-
-    db.query(sql, [category_name, description, creation_date, update_date, status, id], (err, resultado) => {
+    db.query(sql, [category_name, description, update_date,  urlSlug ,status, id], (err, resultado) => {
         if (err) {
             return res.status(500).json({ mensaje: 'Error al actualizar la categoria', error: err });
         }

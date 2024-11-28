@@ -45,13 +45,13 @@ exports.getByUrlSlug = (req, res) => {
 };
 
 exports.postProduct = (req, res) => {
-    const { urlSlug,product_name, description, price, stock_quantity, category_id, creation_date, update_date, image_url, status } = req.body;
+    const { urlSlug,product_name, description, price, stock_quantity, category_id,  image_url, status } = req.body;
 
-    if (!urlSlug || !product_name || !description || !price || !stock_quantity || !category_id || !creation_date || !update_date || !image_url || !status) {
+    if (!urlSlug || !product_name || !description || !price || !stock_quantity || !category_id || !image_url || !status) {
         return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
     }
 
-    const productnew = {urlSlug, product_name, description, price, stock_quantity, category_id, creation_date, update_date, image_url, status };
+    const productnew = {urlSlug, product_name, description, price, stock_quantity, category_id, creation_date : new Date(), image_url, status };
 
     const sql = 'INSERT INTO products SET ?';
     db.query(sql, productnew, (err, resultado) => {
@@ -65,12 +65,12 @@ exports.postProduct = (req, res) => {
 // Actualizar un producto
 exports.putProduct = (req, res) => {
     const { id } = req.params; 
-    const {urlSlug, product_name, description, price, stock_quantity, update_date, image_url, status } = req.body;
+    const {urlSlug, product_name, description, price, stock_quantity,  image_url, status } = req.body;
 
-    if (!urlSlug || !product_name || !description || !price || !stock_quantity || !update_date || !image_url || !status) {
+    if (!urlSlug || !product_name || !description || !price || !stock_quantity || !image_url || !status) {
         return res.status(400).json({ mensaje: 'Todos los campos son obligatorios para actualizar' });
     }
-
+    const update_date = new Date(); 
     const sql = `UPDATE products SET  urlSlug =?, product_name = ?, description = ?, price = ?, stock_quantity = ?, update_date = ?, image_url = ?, status = ? WHERE product_id = ?`;
 
     db.query(sql, [ urlSlug, product_name, description, price, stock_quantity, update_date, image_url, status, id], (err, resultado) => {
