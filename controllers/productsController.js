@@ -5,7 +5,7 @@ exports.getProduct = (req, res) => {
 
     // Si no se pasa `category_id`, seleccionamos todos los productos
     const sql = category_id 
-        ? 'SELECT * FROM products p JOIN categories c ON p.category_id = c.category_id WHERE c.urlSlug = ?' 
+        ? 'SELECT p.urlSlug, p.product_name, p.description, p.stock_quantity,  p.image_url, p.status, p.price  FROM products p JOIN categories c ON p.category_id = c.category_id WHERE c.urlSlug = ?' 
         : 'SELECT * FROM products';
 
     const queryParams = category_id ? [category_id] : []; // Parámetros para la consulta
