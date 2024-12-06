@@ -51,7 +51,7 @@ app.use('/paymentmethod', paymentmethodRoutes);
 app.use('/providers', providersRoutes);
 app.use('/shippingaddresses', shippingaddressesRoutes);
 
-const PORT = 10000;
+const port = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
